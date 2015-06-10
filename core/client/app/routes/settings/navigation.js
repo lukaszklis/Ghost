@@ -7,7 +7,9 @@ var NavigationRoute = AuthenticatedRoute.extend(styleBody, CurrentUserSettings, 
 
     classNames: ['settings-view-navigation'],
 
-    beforeModel: function () {
+    beforeModel: function (transition) {
+        this._super(transition);
+
         return this.get('session.user')
             .then(this.transitionAuthor());
     },

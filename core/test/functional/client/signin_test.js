@@ -81,6 +81,36 @@ CasperTest.begin('Can login to Ghost', 4, function suite(test) {
     });
 }, true);
 
+CasperTest.begin('Not Authenticated user is redirected', 6, function suite(test) {
+    CasperTest.Routines.signout.run(test);
+
+    casper.thenOpenAndWaitForPageLoad('settings.general', function testTitleAndUrl() {
+        test.assertTitle('Sign In - Test Blog', 'Ghost admin has incorrect title');
+        test.assertUrlMatch(/ghost\/signin\/$/, 'Landed on the correct URL');
+    });
+
+    casper.waitForOpaque('' +
+        '.gh-signin', function then() {
+        this.fillAndSave('#login', user);
+    });
+
+    casper.wait(2000);
+
+    casper.waitForResource(/posts/, function testForDashboard() {
+        test.assertUrlMatch(/ghost\/\d+\/$/, 'Landed on the correct URL');
+        test.assertExists('.gh-nav-main-content.active', 'Now we are on Content');
+    }, function onTimeOut() {
+        test.fail('Failed to signin');
+    });
+
+    casper.thenOpenAndWaitForPageLoad('signin-authenticated', function testTitleAndUrl() {
+        test.assertUrlMatch(/ghost\/\d+\/$/, 'Landed on the correct URL');
+        test.assertExists('.gh-nav-main-content.active', 'Now we are on Content');
+    }, function onTimeOut() {
+        test.fail('Failed to redirect');
+    });
+}, true);
+
 CasperTest.begin('Authenticated user is redirected', 6, function suite(test) {
     CasperTest.Routines.signout.run(test);
 

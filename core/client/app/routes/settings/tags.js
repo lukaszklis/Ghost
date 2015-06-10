@@ -14,7 +14,9 @@ paginationSettings = {
 TagsRoute = AuthenticatedRoute.extend(CurrentUserSettings, PaginationRouteMixin, {
     titleToken: 'Settings - Tags',
 
-    beforeModel: function () {
+    beforeModel: function (transition) {
+        this._super(transition);
+
         return this.get('session.user')
             .then(this.transitionAuthor());
     },
